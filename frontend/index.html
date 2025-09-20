@@ -1,0 +1,26 @@
+<!-- frontend/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" /><title>TruthGuard</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <h1>TruthGuard</h1>
+  <textarea id="textInput"></textarea>
+  <button onclick="analyze()">Analyze</button>
+  <div id="result"></div>
+  <script>
+    async function analyze() {
+      const text = document.getElementById('textInput').value;
+      const res = await fetch('http://localhost:5000/api/analyze', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ text })
+      });
+      const json = await res.json();
+      document.getElementById('result').innerText = JSON.stringify(json, null, 2);
+    }
+  </script>
+</body>
+</html>

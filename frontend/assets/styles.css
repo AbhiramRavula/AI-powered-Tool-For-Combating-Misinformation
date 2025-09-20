@@ -1,0 +1,5 @@
+/* frontend/assets/styles.css */
+body { font-family: Arial; max-width: 600px; margin: auto; }
+textarea { width: 100%; height: 150px; }
+button { padding: 10px 20px; margin-top: 10px; }
+#result { margin-top: 20px; white-space: pre-wrap; background: #f0f0f0; padding: 10px; }

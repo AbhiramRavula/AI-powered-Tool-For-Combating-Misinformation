@@ -1,0 +1,10 @@
+{
+  "name": "Misinformation Detector",
+  "image": "mcr.microsoft.com/devcontainers/python:3.10",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "pip install -r backend/requirements.txt",
+  "forwardPorts": [5000],
+  "workspaceFolder": "/workspaces/AI-powered-Tool-For-Combating-Misinformation"
+}
