@@ -1,26 +1,688 @@
-<!-- frontend/index.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" /><title>TruthGuard</title>
-  <link rel="stylesheet" href="assets/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TruthGuard - AI-Powered Content Verification</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header {
+      background: linear-gradient(135deg, #2c3e50, #3498db);
+      padding: 40px 30px;
+      text-align: center;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+
+    .main-content {
+      padding: 40px 30px;
+    }
+
+    .input-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 1.1em;
+    }
+
+    .input-group textarea,
+    .input-group input {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid #e1e8ed;
+      border-radius: 12px;
+      font-size: 16px;
+      background: #fafbfc;
+      transition: all 0.3s ease;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .input-group textarea {
+      min-height: 120px;
+      line-height: 1.5;
+    }
+
+    .input-group textarea:focus,
+    .input-group input:focus {
+      outline: none;
+      border-color: #3498db;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .divider {
+      text-align: center;
+      margin: 30px 0;
+      position: relative;
+      color: #7f8c8d;
+      font-weight: 500;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #e1e8ed, transparent);
+    }
+
+    .divider span {
+      background: white;
+      padding: 0 20px;
+    }
+
+    .analyze-btn {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analyze-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .analyze-btn:hover::before {
+      left: 100%;
+    }
+
+    .analyze-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(52, 152, 219, 0.4);
+    }
+
+    .analyze-btn:active {
+      transform: translateY(-1px);
+    }
+
+    .analyze-btn:disabled {
+      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 4px 10px rgba(149, 165, 166, 0.3);
+    }
+
+    .analyze-btn:disabled:hover {
+      transform: none;
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 0;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 15px;
+      border-left: 5px solid #3498db;
+      animation: slideIn 0.5s ease-out;
+      display: none;
+      overflow: hidden;
+    }
+
+    .result-header {
+      padding: 25px 30px 20px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,249,250,0.9));
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .result-details {
+      padding: 25px 30px;
+    }
+
+    .confidence-badge {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .high-confidence-good { background: #d4edda; color: #155724; }
+    .high-confidence-bad { background: #f8d7da; color: #721c24; }
+    .high-confidence-neutral { background: #fff3cd; color: #856404; }
+    .medium-confidence { background: #cce7ff; color: #004085; }
+    .low-confidence { background: #e2e3e5; color: #383d41; }
+
+    .technical-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background: rgba(108, 117, 125, 0.1);
+      border-radius: 8px;
+      font-size: 0.9em;
+    }
+
+    .tech-label {
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .tech-score {
+      color: #6c757d;
+      font-family: 'Courier New', monospace;
+    }
+
+    .confidence-visualization {
+      margin-bottom: 25px;
+    }
+
+    .confidence-text {
+      text-align: center;
+      margin-top: 8px;
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+
+    .content-preview {
+      margin: 25px 0;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .preview-text {
+      line-height: 1.6;
+      color: #6c757d;
+      font-style: italic;
+      padding-left: 20px;
+      border-left: 3px solid #dee2e6;
+    }
+
+    .analysis-notes {
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .note-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 0.9em;
+      color: #6c757d;
+    }
+
+    .note-icon {
+      flex-shrink: 0;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result-label {
+      font-size: 1.4em;
+      font-weight: 700;
+      color: #2c3e50;
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+
+    .result-score {
+      font-size: 1.1em;
+      color: #5a6c7d;
+      margin-bottom: 15px;
+    }
+
+    .confidence-bar {
+      width: 100%;
+      height: 12px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .confidence-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 1.5s ease-out;
+      position: relative;
+    }
+
+    .confidence-fill.true-news {
+      background: linear-gradient(90deg, #27ae60, #2ecc71);
+    }
+
+    .confidence-fill.fake-news {
+      background: linear-gradient(90deg, #e74c3c, #ec7063);
+    }
+
+    .confidence-fill.uncertain {
+      background: linear-gradient(90deg, #f39c12, #f7dc6f);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #3498db;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e1e8ed;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 20%, 40%, 60%, 80% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    }
+
+    .status-icon {
+      margin-right: 10px;
+      font-size: 1.2em;
+    }
+
+    .true-news { color: #27ae60; }
+    .fake-news { color: #e74c3c; }
+    .uncertain { color: #f39c12; }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        border-radius: 15px;
+      }
+      
+      .header {
+        padding: 30px 20px;
+      }
+      
+      .header h1 {
+        font-size: 2em;
+      }
+      
+      .main-content {
+        padding: 30px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>TruthGuard</h1>
-  <textarea id="textInput"></textarea>
-  <button onclick="analyze()">Analyze</button>
-  <div id="result"></div>
+  <div class="container">
+    <div class="header">
+      <h1>🛡️ TruthGuard</h1>
+      <p>AI-Powered Content Verification & Fact-Checking</p>
+    </div>
+    
+    <div class="main-content">
+      <div class="input-group">
+        <label for="textInput">📝 Analyze Text Content</label>
+        <textarea 
+          id="textInput" 
+          placeholder="Paste your news article, social media post, or any text content here for fact-checking analysis..."
+        ></textarea>
+      </div>
+      
+      <div class="divider">
+        <span>OR</span>
+      </div>
+      
+      <div class="input-group">
+        <label for="urlInput">🔗 Analyze from URL</label>
+        <input 
+          type="url" 
+          id="urlInput" 
+          placeholder="https://example.com/article-to-analyze"
+        />
+      </div>
+      
+      <button class="analyze-btn" id="analyzeBtn">
+        🔍 Analyze Content
+      </button>
+      
+      <div id="result" class="result"></div>
+    </div>
+  </div>
+
   <script>
-    async function analyze() {
-      const text = document.getElementById('textInput').value;
-      const res = await fetch('http://localhost:5000/api/analyze', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ text })
+    // Prevent any form submission behavior
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get elements
+      const analyzeBtn = document.getElementById('analyzeBtn');
+      const textInput = document.getElementById('textInput');
+      const urlInput = document.getElementById('urlInput');
+      const resultDiv = document.getElementById('result');
+
+      // Prevent any default form behaviors
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+      }
+
+      // Main analyze function
+      function analyzeContent() {
+        const text = textInput.value.trim();
+        const url = urlInput.value.trim();
+        
+        // Validation
+        if (!text && !url) {
+          showError("Please enter some text or provide a URL to analyze.");
+          return false;
+        }
+
+        // Show loading state
+        showLoading();
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = '⏳ Analyzing...';
+
+        const payload = text ? { text } : { url };
+        
+        // Make actual API call
+        fetch('http://localhost:5000/api/analyze', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        })
+        .then(response => {
+          if (!response.ok) throw new Error(`Server error: ${response.status}`);
+          return response.json();
+        })
+        .then(data => {
+          showResult(data);
+        })
+        .catch(error => {
+          console.error('API Error:', error);
+          showError(error.message || 'Failed to connect to analysis server');
+        })
+        .finally(() => {
+          resetButton();
+        });
+
+        return false;
+      }
+
+      // Show loading state
+      function showLoading() {
+        resultDiv.innerHTML = `
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Analyzing content with AI models...</p>
+          </div>
+        `;
+        resultDiv.classList.add('show');
+      }
+
+      // Show results with enhanced information
+      function showResult(data) {
+        const label = data.label || 'Unknown';
+        const interpretedLabel = data.interpreted_label || label;
+        const score = data.score || 0;
+        const confidencePercent = data.confidence_percentage || Math.round(score * 100);
+        const icon = data.icon || getStatusIcon(label);
+        const preview = data.content_preview || '';
+        
+        const statusClass = getStatusClass(interpretedLabel);
+        const reliabilityLevel = getReliabilityLevel(confidencePercent, interpretedLabel);
+        
+        resultDiv.innerHTML = `
+          <div class="result-header">
+            <div class="result-label ${statusClass}">
+              <span class="status-icon">${icon}</span>
+              ${interpretedLabel}
+            </div>
+            <div class="confidence-badge ${reliabilityLevel.class}">
+              ${confidencePercent}% confident
+            </div>
+          </div>
+          
+          <div class="result-details">
+            <div class="technical-info">
+              <span class="tech-label">Model Output:</span> ${label}
+              <span class="tech-score">(${score.toFixed(3)} raw score)</span>
+            </div>
+            
+            <div class="confidence-visualization">
+              <div class="confidence-bar">
+                <div class="confidence-fill ${statusClass}" style="width: ${confidencePercent}%"></div>
+              </div>
+              <div class="confidence-text">${reliabilityLevel.text}</div>
+            </div>
+            
+            ${preview ? `
+              <div class="content-preview">
+                <div class="preview-header">
+                  <span class="preview-icon">📄</span>
+                  <span class="preview-title">Content Preview:</span>
+                </div>
+                <div class="preview-text">${preview}</div>
+              </div>
+            ` : ''}
+            
+            <div class="analysis-notes">
+              <div class="note-item">
+                <span class="note-icon">🤖</span>
+                <span>Analyzed using AI-powered fake news detection model</span>
+              </div>
+              <div class="note-item">
+                <span class="note-icon">⚠️</span>
+                <span>Always verify important information from multiple reliable sources</span>
+              </div>
+            </div>
+          </div>
+        `;
+        resultDiv.classList.add('show');
+      }
+
+      // Show error
+      function showError(message) {
+        resultDiv.innerHTML = `
+          <div class="error">
+            <strong>❌ Error:</strong> ${message}
+          </div>
+        `;
+        resultDiv.classList.add('show');
+      }
+
+      // Reset button
+      function resetButton() {
+        analyzeBtn.disabled = false;
+        analyzeBtn.innerHTML = '🔍 Analyze Content';
+      }
+
+      // Helper functions
+      function getStatusIcon(label) {
+        const upperLabel = label.toUpperCase();
+        if (upperLabel.includes('RELIABLE') || upperLabel.includes('REAL')) return '✅';
+        if (upperLabel.includes('FAKE') || upperLabel.includes('MISINFORMATION')) return '❌';
+        if (upperLabel.includes('MISLEADING') || upperLabel.includes('QUESTIONABLE')) return '⚠️';
+        return '🔍';
+      }
+
+      function getStatusClass(label) {
+        const lowerLabel = label.toLowerCase();
+        if (lowerLabel.includes('reliable') || lowerLabel.includes('real')) return 'true-news';
+        if (lowerLabel.includes('fake') || lowerLabel.includes('misinformation')) return 'fake-news';
+        return 'uncertain';
+      }
+
+      function getReliabilityLevel(confidence, label) {
+        const isReliable = label.toLowerCase().includes('reliable');
+        const isFake = label.toLowerCase().includes('fake') || label.toLowerCase().includes('misinformation');
+        
+        if (confidence >= 80) {
+          return {
+            text: isReliable ? 'High Reliability' : isFake ? 'High Risk' : 'High Confidence',
+            class: isReliable ? 'high-confidence-good' : isFake ? 'high-confidence-bad' : 'high-confidence-neutral'
+          };
+        } else if (confidence >= 60) {
+          return {
+            text: 'Moderate Confidence',
+            class: 'medium-confidence'
+          };
+        } else {
+          return {
+            text: 'Low Confidence - Verify Manually',
+            class: 'low-confidence'
+          };
+        }
+      }
+
+      // Event listeners with multiple prevention methods
+      analyzeBtn.onclick = function(e) {
+        preventDefaults(e);
+        analyzeContent();
+        return false;
+      };
+
+      analyzeBtn.addEventListener('click', function(e) {
+        preventDefaults(e);
+        analyzeContent();
+        return false;
+      }, true);
+
+      // Handle Enter key
+      textInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.ctrlKey) {
+          preventDefaults(e);
+          analyzeContent();
+          return false;
+        }
       });
-      const json = await res.json();
-      document.getElementById('result').innerText = JSON.stringify(json, null, 2);
-    }
+
+      urlInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          preventDefaults(e);
+          analyzeContent();
+          return false;
+        }
+      });
+
+      // Clear other input when typing
+      textInput.addEventListener('input', function() {
+        if (textInput.value.trim()) {
+          urlInput.value = '';
+        }
+      });
+
+      urlInput.addEventListener('input', function() {
+        if (urlInput.value.trim()) {
+          textInput.value = '';
+        }
+      });
+
+      // Prevent any form submission on the entire page
+      document.addEventListener('submit', preventDefaults, true);
+      window.addEventListener('beforeunload', function(e) {
+        // This prevents accidental page refresh during analysis
+        if (analyzeBtn.disabled) {
+          e.preventDefault();
+          return '';
+        }
+      });
+    });
   </script>
 </body>
 </html>
