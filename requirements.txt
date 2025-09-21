@@ -1,0 +1,39 @@
+# Core Flask dependencies
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# Machine Learning and NLP
+transformers>=4.36.0
+torch>=2.0.0  # Flexible version - will install latest compatible
+tokenizers>=0.15.0
+safetensors>=0.4.0
+
+# Data processing
+numpy>=1.24.0,<2.0.0
+scipy>=1.10.0
+
+# Web scraping and parsing
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# HTTP and URL handling
+urllib3>=2.0.0
+certifi>=2023.0.0
+
+# Additional ML dependencies (flexible versions)
+huggingface-hub>=0.19.0
+tqdm>=4.64.0
+regex>=2023.0.0
+
+# Development and debugging
+python-dateutil>=2.8.0
+six>=1.16.0
+
+# Optional but recommended for better performance
+accelerate>=0.20.0
+
+# Alternative PyTorch installation instructions:
+# For CPU only: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+# For CUDA 11.8: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# For CUDA 12.1: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
