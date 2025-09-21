@@ -1,0 +1,13 @@
+# Use LF for all Python and text files
+*.py text eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+
+# Do not normalize files in virtual env
+.venv/** -text
+venv/**  -text
