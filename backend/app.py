@@ -1,13 +1,18 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+# from flask_cors import CORS
 import sqlite3
 import requests
 from bs4 import BeautifulSoup
 import logging
 import traceback
 
+from flask_cors import CORS
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://truenewss.netlify.app"])
+
+
+# app = Flask(__name__)
+# CORS(app)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
